@@ -318,8 +318,18 @@ type Run<Program, Input> = IRec<
     >,
 >;
 
-type Program = Cons<Getch, Cons<StartLoop, Cons<Putch, Cons<Getch, Cons<EndLoop, Nil>>>>>;
-type Input = Cons<Succ<Succ<Succ<Zero>>>, Cons<Succ<Succ<Zero>>, Nil>>;
+
+macro_rules! tcons_list {
+    () => {
+        Nil
+    };
+    ($x: ty $(,$xs:ty)* $(,)?) => {
+        Cons<$x, tcons_list!($($xs),*)>
+    };
+}
+
+type Program = tcons_list!(Getch, StartLoop, Putch, Getch, EndLoop);
+type Input = tcons_list!(Succ<Succ<Succ<Zero>>>);
 
 type FinalOutput = Run<Program, Input>;
 
